@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  security-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile.proxy
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./security_middleware:/app/security_middleware
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock  # For Docker-in-Docker
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - good-service
+      - bad-service
+    networks:
+      - mcp-network
+
+  good-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+    ports:
+      - "8002:8002"
+    command: python good_mcp_server.py
+    networks:
+      - mcp-network
+
+  bad-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+    ports:
+      - "8001:8001"
+    command: python bad_mcp_server.py
+    networks:
+      - mcp-network
+
+networks:
+  mcp-network:
+    driver: bridge

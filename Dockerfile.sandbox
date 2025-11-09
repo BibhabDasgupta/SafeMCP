@@ -1,0 +1,39 @@
+# FROM python:3.11-slim
+
+# WORKDIR /sandbox
+
+# # Install curl for HTTP requests
+# RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# # Install Python dependencies
+# RUN pip install --no-cache-dir requests validators
+
+# # Copy test script
+# COPY security_middleware/checkers/sandbox_test.py /sandbox/test.py
+
+# CMD ["python", "test.py"]
+
+
+
+FROM python:3.11-slim
+
+WORKDIR /sandbox
+
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --no-cache-dir requests validators
+
+# Copy test script
+COPY security_middleware/checkers/sandbox_test.py /sandbox/test.py
+
+# Set Python to unbuffered mode for better logging
+ENV PYTHONUNBUFFERED=1
+
+# Default command
+CMD ["python", "/sandbox/test.py"]

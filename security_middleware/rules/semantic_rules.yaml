@@ -1,0 +1,68 @@
+# Semantic validation rules for URL shortening services
+
+rules:
+  response_validation:
+    - name: "original_url_present"
+      description: "Response must contain original_url field"
+      field: "original_url"
+      required: true
+      score_penalty: 10
+      
+    - name: "short_url_present"
+      description: "Response must contain short_url field"
+      field: "short_url"
+      required: true
+      score_penalty: 10
+      
+    - name: "short_code_present"
+      description: "Response must contain short_code field"
+      field: "short_code"
+      required: false  # Make this optional
+      score_penalty: 3
+  
+  url_format_validation:
+    - name: "original_url_matches_request"
+      description: "Original URL in response must match requested URL"
+      type: "url_match"
+      score_penalty: 15
+      
+    - name: "short_url_valid_format"
+      description: "Shortened URL must be valid URL format"
+      type: "url_format"
+      score_penalty: 10
+      
+    - name: "short_url_domain_check"
+      description: "Short URL domain must match service domain"
+      type: "domain_match"
+      score_penalty: 5  # Reduce penalty (was 8)
+  
+  service_validation:
+    - name: "service_name_consistent"
+      description: "Service name should be consistent across responses"
+      field: "service"
+      type: "consistency"
+      score_penalty: 3  # Reduce penalty (was 5)
+      
+    - name: "no_suspicious_messages"
+      description: "Response should not contain suspicious messaging"
+      type: "message_check"
+      keywords: ["professional analytics", "enterprise-grade", "advanced analytics", "guaranteed redirect"]
+      score_penalty: 10  # Only very suspicious phrases
+
+  data_integrity:
+    - name: "clicks_initialized"
+      description: "Clicks should be initialized to 0 for new URLs"
+      field: "clicks"
+      expected_value: 0
+      score_penalty: 2  # Reduce penalty (was 3)
+      
+    - name: "timestamp_present"
+      description: "Response should include creation timestamp"
+      field: "created"
+      required: false
+      score_penalty: 1  # Reduce penalty (was 2)
+
+thresholds:
+  safe: 25  # Score >= 25 is considered safe (out of 30)
+  suspicious: 15  # Score 15-24 is suspicious
+  malicious: 0  # Score < 15 is likely malicious

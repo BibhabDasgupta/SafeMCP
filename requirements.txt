@@ -1,0 +1,28 @@
+# Core web framework - use latest compatible versions
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+
+# HTTP client
+httpx>=0.27.0
+
+# Data validation - must be >= 2.11.7 for fastmcp
+pydantic>=2.11.0
+
+# URL validation
+validators>=0.22.0
+
+# MCP framework - let pip choose compatible version
+fastmcp>=0.2.0
+
+# Security checks
+requests>=2.31.0
+pyyaml>=6.0.1
+
+# Docker integration
+docker>=7.0.0
+
+# Async file operations
+aiofiles>=23.2.1
+
+# Logging
+python-json-logger>=2.0.7

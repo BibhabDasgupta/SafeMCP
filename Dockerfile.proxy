@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install Docker CLI for sandbox testing
+RUN apt-get update && \
+    apt-get install -y docker.io && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY security_middleware/ ./security_middleware/
+COPY security_middleware/checkers/sandbox_test.py ./
+COPY Dockerfile.sandbox ./
+
+# Build sandbox image
+RUN docker build -f Dockerfile.sandbox -t mcp-sandbox-test . || true
+
+CMD ["python", "-m", "security_middleware.security_proxy"]
